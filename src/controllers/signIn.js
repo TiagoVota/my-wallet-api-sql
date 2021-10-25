@@ -2,17 +2,22 @@ import bcrypt from 'bcrypt'
 import { v4 as uuid } from 'uuid'
 
 import connection from "../database/database.js"
+import { validateLogin } from '../validation/signIn.js'
 
 
 const login = async (req, res) => {
-	const { body: { name, password } } = req
+	const { body: { email, password } } = req
+
+	const inputErrors = validateLogin.validate({email, password}).error
+	console.log(inputErrors)
+	if (inputErrors) return res.status(400).send('Inputs inválidos!')
 
 	try {
 		const userPromise = await connection.query(`
 			SELECT id, password
 			FROM "usersTest"
-				WHERE name = $1;
-		`, [name])
+				WHERE email = $1;
+		`, [email])
 		const user = userPromise.rows[0]
 
 		const isValidPassword = bcrypt.compareSync(password, user?.password)

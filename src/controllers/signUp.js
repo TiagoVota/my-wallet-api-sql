@@ -1,10 +1,16 @@
 import bcrypt from 'bcrypt'
 
 import connection from "../database/database.js"
+import { validateRegister } from '../validation/signUp.js'
 
 
 const register = (req, res) => {
-	const { body: { name, email, password, confirmation } } = req
+	const { body: userInfo } = req
+	const { name, email, password } = userInfo
+	
+	const inputErrors = validateRegister.validate(userInfo).error
+	console.log(inputErrors)
+	if (inputErrors) return res.status(400).send('Inputs inválidos!')
 
 	const hash = bcrypt.hashSync(password, 12)
 
