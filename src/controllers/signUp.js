@@ -17,7 +17,7 @@ const register = (req, res) => {
 	try {
 
 		connection.query(`
-			INSERT INTO "usersTest"
+			INSERT INTO users
 				(name, email, password)
 			VALUES
 				($1, $2, $3);

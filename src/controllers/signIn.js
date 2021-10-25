@@ -9,13 +9,12 @@ const login = async (req, res) => {
 	const { body: { email, password } } = req
 
 	const inputErrors = validateLogin.validate({email, password}).error
-	console.log(inputErrors)
 	if (inputErrors) return res.status(400).send('Inputs inválidos!')
 
 	try {
 		const userPromise = await connection.query(`
-			SELECT id, password
-			FROM "usersTest"
+			SELECT id, name, password
+			FROM users
 				WHERE email = $1;
 		`, [email])
 		const user = userPromise.rows[0]
@@ -25,7 +24,7 @@ const login = async (req, res) => {
 		if (user && isValidPassword) {
 			const token = await makeSession(user.id)
 
-			return res.send(token)
+			return res.send({token, name: user.name})
 		} else return res.sendStatus(401)
 		
 	} catch (error) {
@@ -40,7 +39,7 @@ const makeSession = async (userId) => {
 	const token = uuid()
 
 	await connection.query(`
-		INSERT INTO "sessionsTest"
+		INSERT INTO sessions
 			("userId", token)
 		VALUES
 			($1, $2);
