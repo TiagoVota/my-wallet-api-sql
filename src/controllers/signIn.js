@@ -21,16 +21,16 @@ const login = async (req, res) => {
 
 		const isValidPassword = bcrypt.compareSync(password, user?.password)
 
-		if (user && isValidPassword) {
-			const token = await makeSession(user.id)
+		if (!user || !isValidPassword) return res.sendStatus(401)
 
-			return res.send({token, name: user.name})
-		} else return res.sendStatus(401)
+		const token = await makeSession(user.id)
+
+		return res.status(200).send({token, name: user.name})
 		
 	} catch (error) {
 
 		console.log(error)
-		res.sendStatus(500)
+		return res.sendStatus(500)
 	}
 }
 
