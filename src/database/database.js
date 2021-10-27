@@ -1,15 +1,22 @@
 import pg from 'pg'
-import password from './password.js'
 
 
 const { Pool } = pg
 
+const {
+	DB_USER,
+	DB_PASS,
+	DB_PORT,
+	DB_HOST,
+	DB_NAME
+} = process.env
+
 const connection = new Pool ({
-	host:	'localhost',
-	port: 5432,
-	user: 'postgres',
-	password,  // password string
-	database: 'mywallet'
+	user: DB_USER,
+	password: DB_PASS,
+	port: DB_PORT,
+	host: DB_HOST,
+	database: DB_NAME
 })
 
 
