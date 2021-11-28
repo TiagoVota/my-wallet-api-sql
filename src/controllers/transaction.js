@@ -1,25 +1,24 @@
 import connection from "../database/database.js"
-import { validateOutflow } from '../validation/outflow.js'
+import { validateTransaction } from '../validation/transaction.js'
 
-const postOutflow = async (req, res) => {
+const postTransaction = async (req, res) => {
 	const {
 		body: { value, description },
 		headers: { authorization }
 	} = req
 	const token = authorization?.replace('Bearer ', '')
-	const date = makeTodayDate()
 	
 	if (!token) return res.sendStatus(401)
 
-	const inputErrors = validateOutflow.validate({value, description}).error
+	const inputErrors = validateTransaction.validate({value, description}).error
 	if (inputErrors) return res.status(400).send('Inputs inválidos!')
 
 	try {
 		const userPromise = await connection.query(`
 			SELECT users.id FROM sessions
-			JOIN users
-			ON sessions."userId" = users.id
-			WHERE sessions.token = $1;
+				JOIN users
+					ON sessions.user_id = users.id
+				WHERE sessions.token = $1;
 		`, [token])
 		const user = userPromise.rows[0]
 
@@ -29,12 +28,12 @@ const postOutflow = async (req, res) => {
 
 		await connection.query(`
 			INSERT INTO statements
-				("userId", value, description, date)
+				(user_id, value, description)
 			VALUES
-				($1, $2, $3, $4)
-		`, [userId, value, description, date])
+				($1, $2, $3)
+		`, [userId, value, description])
 
-		res.sendStatus(204)
+		return res.sendStatus(204)
 
 	} catch (error) {
 		console.log(error)
@@ -42,9 +41,5 @@ const postOutflow = async (req, res) => {
 	}
 }
 
-const makeTodayDate = () => {
-	const date = new Date()
-	return `${date.getDate()}/${date.getMonth()+1}`
-}
 
-export { postOutflow }
+export { postTransaction }

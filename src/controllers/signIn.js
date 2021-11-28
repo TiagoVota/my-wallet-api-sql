@@ -40,7 +40,7 @@ const makeSession = async (userId) => {
 
 	await connection.query(`
 		INSERT INTO sessions
-			("userId", token)
+			(user_id, token)
 		VALUES
 			($1, $2);
 	`, [userId, token])

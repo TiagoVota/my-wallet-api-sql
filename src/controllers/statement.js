@@ -13,20 +13,22 @@ const getStatements = async (req, res) => {
 		const statementsPromise = await connection.query(`
 			SELECT statements.*
 			FROM statements
-			JOIN sessions
-			ON sessions."userId" = statements."userId"
-			WHERE sessions.token = $1;
+				JOIN sessions
+					ON sessions.user_id = statements.user_id
+				WHERE sessions.token = $1;
 		`, [token])
 		const statementsList = statementsPromise.rows
-		const { userId } = statementsList[0]
-
+		console.log({statementsList})
+		
+		const userId = statementsList[0]?.user_id
+		
 		if (!userId) return res.status(200).send(makeStatement())
 		
 		const balancePromise = await connection.query(`
 			SELECT SUM(value) AS balance
 			FROM statements
-			WHERE "userId" = $1
-			GROUP BY "userId";
+				WHERE user_id = $1
+			GROUP BY user_id;
 		`, [userId])
 		const balance = balancePromise.rows[0]
 
@@ -39,9 +41,9 @@ const getStatements = async (req, res) => {
 }
 
 
-const makeStatement = (statementList=[], balanceDict={}) => {
+const makeStatement = (statementsList=[], balanceDict={}) => {
 	const info = {
-		statementList,
+		statementsList,
 		...balanceDict
 	}
 
