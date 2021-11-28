@@ -1,8 +1,6 @@
-
 import * as userService from '../services/userService.js'
-
+import * as userValidation from '../validations/userValidation.js'
 import theValidationProceeded from '../validations/handleValidation.js'
-import validateSignUp from '../validations/validation.signUp.js'
 
 
 const signUp = async (req, res) => {
@@ -13,12 +11,12 @@ const signUp = async (req, res) => {
 		password,
 	} = singUpInfo
 
-	// TODO: Criar middleware(?) para isso aqui :3
+	// TODO: Criar middleware(?) para isso aqui
 	const isValidSignUp = theValidationProceeded({
 		res,
 		status: 422,
 		objectToValid: singUpInfo,
-		objectValidation: validateSignUp
+		objectValidation: userValidation.validateSignUp
 	})
 
 	if (!isValidSignUp) return
