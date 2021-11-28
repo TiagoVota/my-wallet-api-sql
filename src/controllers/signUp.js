@@ -1,47 +1,62 @@
 import bcrypt from 'bcrypt'
 
-import connection from "../database/database.js"
-import { validateRegister } from '../validation/signUp.js'
+import connection from '../database/database.js'
+import theValidationProceeded from '../validations/handleValidation.js'
+import validateSignUp from '../validations/validation.signUp.js'
 
 
-const register = async (req, res) => {
-	const { body: userInfo } = req
-	const { name, email, password } = userInfo
-	
-	const inputErrors = validateRegister.validate(userInfo).error
-	if (inputErrors) return res.status(400).send('Inputs inválidos!')
+const signUp = async (req, res) => {
+	const { body: singUpInfo } = req
+	const {
+		name,
+		email,
+		password,
+	} = singUpInfo
+
+	const isValidSignUp = theValidationProceeded({
+		res,
+		status: 422,
+		objectToValid: singUpInfo,
+		objectValidation: validateSignUp
+	})
+
+	if (!isValidSignUp) return
 
 	const hash = bcrypt.hashSync(password, 12)
+	const lowerEmail = email.toLowerCase()
 
 	try {
-		const alreadyRegistered = await haveExistentEmail(email)
-		if (alreadyRegistered) return res.status(409).send('E-mail já cadastrado!')
+		const isRegistered = await isUserRegistered(lowerEmail)
+		if (isRegistered) return res.status(409).send('E-mail já cadastrado!')
 
-		await connection.query(`
-			INSERT INTO users
-				(name, email, password)
-			VALUES
-				($1, $2, $3);
-		`, [name, email, hash])
+		await registerUser(name, lowerEmail, hash)
 
-		return res.send({name, email, password, hash})
+		return res.status(201).send({name, email: lowerEmail})
 
 	} catch (error) {
 		console.log(error)
-		return res.send(500)
+		return res.sendStatus(500)
 	}
 }
 
+const isUserRegistered = async (email) => {
+	const query = `
+		SELECT * FROM users
+			WHERE email = $1;
+	`
+	const registeredUserPromise = await connection.query(query, [email])
+	return Boolean(registeredUserPromise.rowCount)
+}
 
-const haveExistentEmail = async (email) => {
-	const searchEmailPromise = await connection.query(`
-		SELECT *
-		FROM users
-		WHERE email = $1;
-	`, [email])
-
-	return searchEmailPromise.rowCount !== 0
+const registerUser = async (name, email, hash) => {
+	const query = `
+		INSERT INTO users
+			(name, email, password)
+		VALUES
+			($1, $2, $3);
+	`
+	await connection.query(query, [name, email, hash])
 }
 
 
-export { register }
+export { signUp }

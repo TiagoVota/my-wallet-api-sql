@@ -1,5 +1,5 @@
-import connection from "../database/database.js"
-import { validateTransaction } from '../validation/transaction.js'
+import connection from '../database/database.js'
+import { validateTransaction } from '../validations/transaction.js'
 
 const postTransaction = async (req, res) => {
 	const {

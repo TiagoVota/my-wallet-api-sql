@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
 import { v4 as uuid } from 'uuid'
 
-import connection from "../database/database.js"
-import { validateLogin } from '../validation/signIn.js'
+import connection from '../database/database.js'
+import { validateLogin } from '../validations/signIn.js'
 
 
 const login = async (req, res) => {
