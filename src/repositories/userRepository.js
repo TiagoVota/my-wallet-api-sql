@@ -1,14 +1,14 @@
 import connection from '../database/database.js'
 
 
-const findUsersByEmail = async (email) => {
+const findUserByEmail = async (email) => {
 	const query = `
 		SELECT * FROM users
 			WHERE email = $1;
 	`
 	const otherUsersPromise = await connection.query(query, [email])
 	
-	return otherUsersPromise.rows
+	return otherUsersPromise.rows[0]
 }
 
 const registerUser = async ({ name, email, password }) => {
@@ -17,7 +17,8 @@ const registerUser = async ({ name, email, password }) => {
 			(name, email, password)
 		VALUES
 			($1, $2, $3)
-		RETURNING *;
+		RETURNING
+			id, name, email;
 	`
 	const userPromise = await connection.query(query, [name, email, password])
 
@@ -26,6 +27,6 @@ const registerUser = async ({ name, email, password }) => {
 
 
 export {
-	findUsersByEmail,
+	findUserByEmail,
 	registerUser,
 }
