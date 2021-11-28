@@ -1,8 +1,8 @@
 import cors from 'cors'
 import express from 'express'
 
+import * as userController from './controllers/userController.js'
 import { login } from './controllers/signIn.js'
-import { signUp } from './controllers/signUp.js'
 import { postTransaction } from './controllers/transaction.js'
 import { getStatements } from './controllers/statement.js'
 
@@ -14,8 +14,8 @@ app.use(express.json())
 
 app.get('/status', (_, res) => res.sendStatus(200))
 
+app.post('/sign-up', userController.signUp)
 app.post('/sign-in', login)
-app.post('/sign-up', signUp)
 
 app.post('/transaction', postTransaction)
 

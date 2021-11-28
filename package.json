@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./src/server.js",
     "start:dev": "node ./src/server.js",
-    "start:watch": "npx nodemon ./src/server.js",
+    "start:watch": "npx kill-port 4242 && npx nodemon ./src/server.js",
     "start:prod": "NODE_ENV=production node ./src/server.js",
     "test": "NODE_ENV=test npx jest --run-in-band",
     "test:watch": "NODE_ENV=test npx jest --run-in-band --watch",
