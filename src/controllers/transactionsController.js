@@ -35,7 +35,24 @@ const postTransaction = async (req, res) => {
 	}
 }
 
+const getStatements = async (req, res) => {
+	const { userId } = req
+	try {
+		const statements = await transactionsService.makeStatements(userId)
+
+		return res.status(200).send(statements)
+		
+	} catch (error) {
+		console.log(error)
+		return res.sendStatus(500)
+	}
+}
+
+
+
+
 
 export {
-	postTransaction
+	postTransaction,
+	getStatements,
 }

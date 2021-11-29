@@ -4,7 +4,6 @@ import express from 'express'
 import auth from './middlewares/auth.js'
 import * as userController from './controllers/userController.js'
 import * as transactionsController from './controllers/transactionsController.js'
-import { getStatements } from './controllers/statement.js'
 
 
 const app = express()
@@ -18,7 +17,7 @@ app.post('/sign-up', userController.signUp)
 app.post('/login', userController.login)
 
 app.post('/transaction', auth, transactionsController.postTransaction)
-app.get('/statement', auth, getStatements)
+app.get('/statements', auth, transactionsController.getStatements)
 
 
 export default app
