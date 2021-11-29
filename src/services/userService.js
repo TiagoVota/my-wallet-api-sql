@@ -10,8 +10,9 @@ const createUser = async ({ name, email, password }) => {
 	const lowerEmail = email.toLowerCase()
 
 	const userWithThatEmail = await userRepository.findUserByEmail(lowerEmail)
+	console.log({userWithThatEmail})
 
-	if (userWithThatEmail.length > 0) return null
+	if (userWithThatEmail?.id) return null
 	
 	const userInfo = {
 		name,

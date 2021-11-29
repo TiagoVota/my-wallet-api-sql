@@ -1,17 +1,16 @@
-import connection from '../database/database.js'
+import * as sessionRepository from '../repositories/sessionRepository.js'
 
 
 const auth = async (req, res, next) => {
 	const { authorization } = req.headers
 	const token = authorization?.replace('Bearer ', '')
 
-
 	try {
-		const userSession = await getUserSession(token)
+		const session = await sessionRepository.findSessionByToken(token)
 
-		if (!userSession) return res.sendStatus(401)
+		if (!session) return res.sendStatus(401)
 
-		req.userId = userSession.user_id
+		req.userId = session.userId
 
 	} catch (error) {
 		console.log(error)
@@ -19,16 +18,6 @@ const auth = async (req, res, next) => {
 	}
 
 	next()
-}
-
-const getUserSession = async (token) => {
-	const query = `
-		SELECT * FROM sessions
-			WHERE token = $1;
-	`
-	const userSessionPromise = await connection.query(query, [token])
-
-	return userSessionPromise.rows[0]
 }
 
 

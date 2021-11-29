@@ -3,7 +3,8 @@ import connection from '../database/database.js'
 
 const findSessionByUserId = async (userId) => {
 	const query = `
-		SELECT * FROM sessions
+		SELECT id, user_id AS "userId", token
+		FROM sessions
 			WHERE user_id = $1;
 	`
 	const sessionPromise = await connection.query(query, [userId])
@@ -36,9 +37,21 @@ const createSession = async ({ userId, token }) => {
 	return insertSessionPromise.rows[0]
 }
 
+const findSessionByToken = async (token) => {
+	const query = `
+		SELECT id, user_id AS "userId", token
+		FROM sessions
+			WHERE token = $1;
+	`
+	const sessionPromise = await connection.query(query, [token])
+
+	return sessionPromise.rows[0]
+}
+
 
 export {
 	findSessionByUserId,
 	updateSession,
 	createSession,
+	findSessionByToken,
 }
