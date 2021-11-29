@@ -41,7 +41,7 @@ describe('POST /sign-in', () => {
 
 	test('Returns 200 for correct information', async () => {
 		const result = await supertest(app)
-			.post('/sign-in')
+			.post('/login')
 			.send(validBody)
 		
 		expect(result.status).toEqual(200)

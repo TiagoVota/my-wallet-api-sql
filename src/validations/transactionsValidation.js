@@ -7,4 +7,6 @@ const validateTransaction =  joi.object({
 }).length(2)
 
 
-export { validateTransaction }
+export {
+	validateTransaction,
+}

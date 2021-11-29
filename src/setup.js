@@ -3,7 +3,13 @@ import dotenv from 'dotenv'
 
 const { NODE_ENV } = process.env
 
-const path = (NODE_ENV === 'prod') ? '.env' : '.env.test'
+const paths = {
+	'production': '.env',
+	'test': '.env.test'
+}
+
+const path = paths[NODE_ENV] || '.env.dev'
+
 
 dotenv.config({
 	path

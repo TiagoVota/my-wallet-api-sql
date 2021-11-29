@@ -1,10 +1,9 @@
 import cors from 'cors'
 import express from 'express'
 
-import { login } from './controllers/signIn.js'
-import { register } from './controllers/signUp.js'
-import { postTransaction } from './controllers/transaction.js'
-import { getStatements } from './controllers/statement.js'
+import auth from './middlewares/auth.js'
+import * as userController from './controllers/userController.js'
+import * as transactionsController from './controllers/transactionsController.js'
 
 
 const app = express()
@@ -12,14 +11,13 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+app.get('/status', (_, res) => res.sendStatus(200))
 
-app.post('/sign-in', login)
+app.post('/sign-up', userController.signUp)
+app.post('/login', userController.login)
 
-app.post('/sign-up', register)
-
-app.post('/transaction', postTransaction)
-
-app.get('/statement', getStatements)
+app.post('/transaction', auth, transactionsController.postTransaction)
+app.get('/statements', auth, transactionsController.getStatements)
 
 
 export default app
